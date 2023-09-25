@@ -66,7 +66,62 @@ asmFunc:
 .endif
     
     /*** STUDENTS: Place your code BELOW this line!!! **************/
+    mov r5,0 /* register for 0 */
+    mov r12,1000 /* register for 1000 */
+    
+    LDR r3,=eat_out /* reset eat_out to 0 */
+    STR r5,[r3]
+    
+    LDR r6,=stay_in /* reset stay_in to 0 */
+    STR r5,[r6]
+    
+    LDR r7,=eat_ice_cream /* reset eat_ice_cream to 0 */
+    STR r5,[r7]
+    
+    LDR r8,=we_have_a_problem /* reset _we_have_a_problem */
+    STR r5,[r8]
+    
+    LDR r9,=transaction /* copies r0 to transaction */
+    LDR r0,[r9]
+    
+    cmp r12,r0 /* transaction>1000? */
+    bmi not_valid /* if yes */ 
+    cmn r12,r0 /* transaction<-1000? */
+    bmi not_valid /* if yes */
+    ADDS r12,r0,r2 /* r12 is tmpBalance if conditions met */
+    bvs not_valid /* if overflow */
+    b calc_temp 
+    
+    
+not_valid:
+    STR r5,[r9] /* transaction 0 */
+    mov r5,1 
+    STR r5,[r8] /* we_have_a_problem 1 */
+    LDR r0,[r1] /* r0 balance */
+    b done
 
+calc_temp:
+    STR r12,[r1] /* balance=tmpBalance */
+    cmn r12,r5
+    mov r5,1
+    beq eat_ice_cream_1 /* if balance=0 */
+    bpl eat_out_1 /* if balance>0 */
+    bmi stay_in_1 /* if balance<0 */
+    
+eat_ice_cream_1:
+    STR r5,[r7] /* eat_ice_cream=1 */
+    LDR r0,[r1] 
+    b done
+    
+eat_out_1:
+    STR r5,[r3] /* eat_out=1 */
+    LDR r0,[r1]
+    b done
+    
+stay_in_1:
+    STR r5,[r6] /* stay_in */
+    LDR r0,[r1]
+    b done
     
     /*** STUDENTS: Place your code ABOVE this line!!! **************/
 
